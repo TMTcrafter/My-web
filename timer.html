@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Timer App Tun Min Thant</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome for icons -->
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: white;
+      margin: 0;
+      padding: 0;
+      overflow-x: hidden;
+      position: relative;
+      min-height: 100vh;
+      transition: background 1s ease;
+    }
+
+    .navbar {
+      display: flex;
+      justify-content: center;
+      background: white;
+      padding: 10px;
+      gap: 10px;
+    }
+
+    .nav-button {
+      background: linear-gradient(to right, #4facfe, #00f2fe, #43e97b, #38f9d7);
+      border: none;
+      padding: 12px 25px;
+      margin: 0 5px;
+      border-radius: 15px;
+      font-size: 18px;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .nav-button:hover {
+      transform: scale(1.05);
+    }
+
+    .page {
+      display: none;
+      margin-top: 30px;
+    }
+
+    .active {
+      display: block;
+    }
+
+    /* Timer and Stopwatch Styling */
+    .digital-clock-container {
+      display: inline-block;
+      position: relative;
+      padding: 40px;
+      border-radius: 20px;
+      margin-top: 30px;
+    }
+
+    .digital-clock {
+      background: black;
+      padding: 20px 40px;
+      border-radius: 20px;
+      font-size: 60px;
+      color: limegreen;
+      font-family: 'Courier New', Courier, monospace;
+      transition: all 0.5s ease;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .change-time-btn, .start-stop-btn, .reset-btn, .timer-start-btn, .timer-stop-btn {
+      background: linear-gradient(to right, #a070ff, #ff8a5b);
+      border: none;
+      padding: 10px 25px;
+      font-size: 20px;
+      border-radius: 12px;
+      margin: 10px;
+      cursor: pointer;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .change-time-btn:hover, .start-stop-btn:hover, .reset-btn:hover, .timer-start-btn:hover, .timer-stop-btn:hover {
+      transform: translateY(-3px);
+    }
+
+    /* About Page Styling */
+    .about-page {
+      text-align: center;
+      margin-top: 50px;
+      font-size: 20px;
+      padding: 20px;
+    }
+
+    .about-page h2 {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    /* Social Media Icons Section */
+    .social-media {
+      margin-top: 50px;
+    }
+
+    .social-media a {
+      margin: 0 15px;
+      font-size: 36px;
+      color: #000;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .social-media a:hover {
+      color: #ff4747;
+    }
+
+    /* Modal Styling */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.7);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      animation: fadeIn 0.4s;
+    }
+
+    @keyframes fadeIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .modal-content h2 {
+      margin-bottom: 20px;
+    }
+
+    .modal-content input[type="color"] {
+      width: 150px;
+      height: 150px;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .modal-content button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #4facfe;
+      border: none;
+      color: white;
+      font-size: 18px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .modal-content button:hover {
+      background: #00f2fe;
+    }
+
+    /* Footer Styling */
+    .footer {
+      margin-top: 50px;
+      font-size: 18px;
+    }
+
+    .footer a {
+      color: #4facfe;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+
+    .footer a:hover {
+      color: #ff4747;
+    }
+  </style>
+</head>
+<body>
+
+<div class="navbar">
+  <button class="nav-button" onclick="showPage('timerPage')">Timer</button>
+  <button class="nav-button" onclick="showPage('stopwatchPage')">Stopwatch</button>
+  <button class="nav-button" onclick="showPage('settingsPage')">Settings</button>
+  <button class="nav-button" onclick="showPage('aboutPage')">About App</button>
+</div>
+
+<!-- Timer Page -->
+<div id="timerPage" class="page active">
+  <div class="digital-clock-container" id="timerContainer">
+    <div class="digital-clock" id="timerDisplay">11:00</div>
+  </div>
+  <br>
+  <button class="change-time-btn" onclick="changeTimer()">Change Time</button>
+  <button class="timer-start-btn" onclick="startTimer()">Start Timer</button>
+  <button class="timer-stop-btn" onclick="stopTimer()">Stop Timer</button>
+</div>
+
+<!-- Stopwatch Page -->
+<div id="stopwatchPage" class="page">
+  <div class="digital-clock-container" id="stopwatchContainer">
+    <div class="digital-clock" id="stopwatchDisplay">00:00:00.000</div>
+  </div>
+  <br>
+  <button class="start-stop-btn" onclick="toggleStopwatch()">Start</button>
+  <button class="reset-btn" onclick="resetStopwatch()">Reset</button>
+</div>
+
+<!-- Settings Page -->
+<div id="settingsPage" class="page">
+  <button onclick="openModal('background')">Change Background Colour</button>
+  <button onclick="openModal('time')">Change Time Colour</button>
+</div>
+
+<!-- About App Page -->
+<div id="aboutPage" class="page">
+  <div class="about-page">
+    <h2>The Timer App</h2>
+    <p>The Timer App is a simple yet powerful tool designed to help you manage your time effectively. Whether you're cooking, working, studying, or exercising, this app allows you to set customizable timers for any task. With an easy-to-use interface and helpful features like countdowns, stopwatch, and a sleek dark mode, you can stay focused and on track with ease.</p>
+    <p><strong>MADE BY TUN MIN THANT</strong></p>
+  </div>
+  <div class="social-media">
+    <a href="https://www.youtube.com/@tmtcrafter" target="_blank">
+      <i class="fab fa-youtube"></i> YouTube
+    </a>
+    <a href="https://www.tiktok.com/@prime_._ryan" target="_blank">
+      <i class="fab fa-tiktok"></i> TikTok
+    </a>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="colorModal" class="modal">
+  <div class="modal-content">
+    <h2 id="modalTitle">Pick Color</h2>
+    <input type="color" id="modalColorPicker">
+    <br>
+    <button onclick="applyPickedColor()">Apply</button>
+  </div>
+</div>
+
+<!-- Footer Section -->
+<div class="footer">
+  <p>BY <a href="https://tmtcrafter.github.io/My-web" target="_blank">TUN MIN THANT</a></p>
+</div>
+
+<script>
+// Show pages functionality
+function showPage(pageId) {
+  document.querySelectorAll('.page').forEach(page => {
+    page.classList.remove('active');
+  });
+  document.getElementById(pageId).classList.add('active');
+}
+
+// Timer functionality
+let timerInterval;
+let timerMinutes = 11;
+let timerSeconds = 0;
+
+function changeTimer() {
+  let minutes = prompt("Enter minutes:", "11");
+  let seconds = prompt("Enter seconds:", "00");
+  if (minutes !== null && seconds !== null) {
+    timerMinutes = parseInt(minutes);
+    timerSeconds = parseInt(seconds);
+    updateTimerDisplay();
+  }
+}
+
+function updateTimerDisplay() {
+  let min = timerMinutes < 10 ? "0" + timerMinutes : timerMinutes;
+  let sec = timerSeconds < 10 ? "0" + timerSeconds : timerSeconds;
+  document.getElementById('timerDisplay').textContent = `${min}:${sec}`;
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (timerMinutes === 0 && timerSeconds === 0) {
+      clearInterval(timerInterval);
+      alert("Timer finished!");
+      return;
+    }
+    if (timerSeconds === 0) {
+      timerMinutes--;
+      timerSeconds = 59;
+    } else {
+      timerSeconds--;
+    }
+    updateTimerDisplay();
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// Stopwatch functionality
+let stopwatchInterval;
+let stopwatchMilliseconds = 0;
+let isRunning = false;
+
+function toggleStopwatch() {
+  if (isRunning) {
+    clearInterval(stopwatchInterval);
+    document.querySelector('.start-stop-btn').textContent = 'Start';
+  } else {
+    stopwatchInterval = setInterval(updateStopwatch, 10);
+    document.querySelector('.start-stop-btn').textContent = 'Stop';
+  }
+  isRunning = !isRunning;
+}
+
+function updateStopwatch() {
+  stopwatchMilliseconds += 10;
+  let hours = Math.floor(stopwatchMilliseconds / 3600000);
+  let minutes = Math.floor((stopwatchMilliseconds % 3600000) / 60000);
+  let seconds = Math.floor((stopwatchMilliseconds % 60000) / 1000);
+  let milliseconds = stopwatchMilliseconds % 1000;
+
+  document.getElementById('stopwatchDisplay').textContent =
+    (hours < 10 ? "0" + hours : hours) + ":" +
+    (minutes < 10 ? "0" + minutes : minutes) + ":" +
+    (seconds < 10 ? "0" + seconds : seconds) + "." +
+    (milliseconds < 100 ? (milliseconds < 10 ? "00" + milliseconds : "0" + milliseconds) : milliseconds);
+}
+
+function resetStopwatch() {
+  clearInterval(stopwatchInterval);
+  stopwatchMilliseconds = 0;
+  isRunning = false;
+  document.getElementById('stopwatchDisplay').textContent = "00:00:00.000";
+  document.querySelector('.start-stop-btn').textContent = 'Start';
+}
+
+// Modal functionality
+function openModal(type) {
+  document.getElementById('modalTitle').textContent = `Pick ${type === 'background' ? 'Background' : 'Time'} Colour`;
+  document.getElementById('colorModal').style.display = 'flex';
+}
+
+function applyPickedColor() {
+  let color = document.getElementById('modalColorPicker').value;
+  if (document.getElementById('modalTitle').textContent.includes("Background")) {
+    document.body.style.backgroundColor = color;
+  } else {
+    document.querySelectorAll('.digital-clock').forEach(clock => {
+      clock.style.color = color;
+    });
+  }
+  document.getElementById('colorModal').style.display = 'none';
+}
+</script>
+
+</body>
+</html>
